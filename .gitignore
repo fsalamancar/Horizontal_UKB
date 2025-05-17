@@ -1,5 +1,4 @@
 # Ignorar carpeta de datos pesados de UK Biobank
-UK_BIOBANK_DATA/
-
-
-
+main/data
+main/outputs
+.venv
