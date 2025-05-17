@@ -1,4 +1,6 @@
-# Ignorar carpeta de datos pesados de UK Biobank
+# Ignorar carpeta de datos pesados 
 main/data
+# Ignorar carpeta de datos generados y graficas 
 main/outputs
+# Ignorar carpeta virtual environment
 .venv
