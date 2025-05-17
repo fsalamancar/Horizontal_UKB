@@ -160,6 +160,8 @@ phenodata_esential <- phenodata_raw%>%dplyr::select(eid, matches('_20116_|_20117
 colnames(phenodata_esential) <- colnames(phenodata_esential)%>%str_replace_all('f_20116','Smoking')%>%str_replace_all('f_20117','Alcohol')%>%str_replace_all('_0$','')
 # if -3 then NA for each of the columns except eid
 phenodata_esential <- phenodata_esential%>%mutate(across(where(is.numeric),~ifelse(.==-3,NA,.)))
+
+
 ## Genetics - Ethnicity
 pcasfile <- '/Users/guillermotorres/Library/CloudStorage/Dropbox/DX_Projects/UKB/2024/data2use/genomics_data.tsv'
 pcas_raw <- fread(pcasfile,header = TRUE, stringsAsFactors = FALSE)%>%as_tibble()
