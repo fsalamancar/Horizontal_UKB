@@ -22,8 +22,8 @@ def normalizar_proteinas(df, clase):
     from scipy.stats import skew
     
     for col in df.columns:
-        if col == clase:  # Saltar la columna categórica
-            continue
+        if col == clase or not np.issubdtype(df[col].dtype, np.number):
+            continue  # saltar columnas no numéricas o la clase
         
         x = df[col]
         s = skew(x.dropna())
