@@ -69,16 +69,6 @@ IBD, including **Crohn’s disease** and **ulcerative colitis**, is a chronic an
 
 ---
 
-## 📊 Visuals
-
-<div align="center">
-<img src="assets/trajectory_example.png" alt="Proteomic Trajectories" width="500"/>
-<br>
-<em>Example of longitudinal proteomic trajectories</em>
-</div>
-
----
-
 ## 🧩 Folder Structure
 
 ```bash
