@@ -4,3 +4,5 @@ main/data
 main/outputs
 # Ignorar carpeta virtual environment
 .venv
+#Ignorar cache
+main/__pycache__
