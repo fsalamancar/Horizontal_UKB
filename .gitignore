@@ -6,3 +6,5 @@ main/outputs
 .venv
 #Ignorar cache
 main/__pycache__
+#Ignorar carpeta output de pheno
+phenotype/outputs
