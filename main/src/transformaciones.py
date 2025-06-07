@@ -42,3 +42,6 @@ def normalizar_proteinas(df, clase):
         df[col] = x_trans
 
     return df
+
+
+# USAR LA NORMALIZACION DE GUILLERMO
