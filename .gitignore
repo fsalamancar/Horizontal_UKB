@@ -8,3 +8,5 @@ main/outputs
 main/__pycache__
 #Ignorar carpeta output de pheno
 phenotype/outputs
+#Ignorar todos los tsv
+*.tsv
