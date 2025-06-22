@@ -10,3 +10,5 @@ main/__pycache__
 phenotype/outputs
 #Ignorar todos los tsv
 *.tsv
+*.csv
+*.xlsx
