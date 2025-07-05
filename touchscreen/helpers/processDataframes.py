@@ -31,12 +31,13 @@ def get_fieldid_to_name_map(chars_df):
     return dict(zip(df['FieldID'], df['Field']))
 
 def get_highly_correlated_columns_from_matrix(corr_matrix, chars_df, threshold=0.75, show=True):
-    # Map FieldID to readable names
+    # Create FieldID mapping → readable name
     fieldid_to_name = get_fieldid_to_name_map(chars_df)
-    # Extract upper triangle to avoid duplicates
+
+    # Extract upper triangle (no duplicates or diagonal)
     upper = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(bool))
 
-    # Extract strongly correlated pairs
+    # Extract pairs with high correlation
     high_corr_pairs = (
         upper.stack()
         .reset_index()
@@ -45,22 +46,21 @@ def get_highly_correlated_columns_from_matrix(corr_matrix, chars_df, threshold=0
 
     high_corr_pairs = high_corr_pairs[high_corr_pairs['correlation'] > threshold]
 
-    # Extract FieldIDs
     high_corr_pairs['FieldID1'] = high_corr_pairs['Variable1'].apply(extract_field_id)
     high_corr_pairs['FieldID2'] = high_corr_pairs['Variable2'].apply(extract_field_id)
 
-    # Map to readable names (if available)
     high_corr_pairs['Name1'] = high_corr_pairs['FieldID1'].apply(lambda fid: fieldid_to_name.get(fid, f'f_{fid}' if fid else 'Unknown'))
     high_corr_pairs['Name2'] = high_corr_pairs['FieldID2'].apply(lambda fid: fieldid_to_name.get(fid, f'f_{fid}' if fid else 'Unknown'))
 
-    # Order by correlation
     high_corr_pairs = high_corr_pairs.sort_values(by='correlation', ascending=False)
 
     if show:
-        print(f"Highly correlated pairs (correlation > {threshold}):")
-        display(high_corr_pairs[['Variable1', 'Variable2', 'Name1', 'Name2', 'correlation']])
+        print(f"\nPairs found with correlation > {threshold}: {len(high_corr_pairs)}")
+        if not high_corr_pairs.empty:
+            display(high_corr_pairs[['Variable1', 'Variable2', 'FieldID1', 'FieldID2', 'Name1', 'Name2', 'correlation']])
+        else:
+            print("No pairs were found with correlation above the threshold.")
 
-    return high_corr_pairs[['Variable1', 'Variable2', 'Name1', 'Name2', 'correlation']]
 
 def eliminate_fields_by_fieldID (irrelevant_ids, df) :
     pattern = re.compile(rf"^f_({'|'.join(irrelevant_ids)})_\d+_\d+$")
