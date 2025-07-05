@@ -12,3 +12,6 @@ phenotype/outputs
 *.tsv
 *.csv
 *.xlsx
+
+touchscreen/helpers/__pycache__
+#Ignorar carpeta output de pheno
