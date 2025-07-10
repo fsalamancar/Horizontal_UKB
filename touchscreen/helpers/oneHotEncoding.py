@@ -118,12 +118,24 @@ def onehot_encode_multiple_nominal(df, touchscreen_chars_df, touchscreen_cbkeys_
     Returns:
     - A new DataFrame with one-hot encoded columns for multiple-choice fields.
     """
-    # Convert columns to efficient nullable integer type
+    import re
+    from collections import defaultdict
+    from functools import reduce
+    from joblib import Parallel, delayed
+
+    # Compile regex pattern for valid UKB field columns
+    valid_col_pattern = re.compile(r'^f_\d+_0_\d+$')
+
+    # Filter to keep only 'eid' and valid UKB field columns
+    valid_columns = ['eid'] + [col for col in df.columns if valid_col_pattern.match(col)]
+    df = df[valid_columns].copy()
+
+    # Convert values to nullable integers
     for col in df.columns:
         if col != 'eid':
             df.loc[:, col] = df[col].astype("Int32")
 
-    # Extract FieldID mappings and coding dictionary
+    # Extract FieldID from column names and get coding info
     column_fieldid_map = extract_fieldid_mapping(df, pattern=r'f_(\d+)_0_\d+')
     fieldid_to_coding = extract_fieldid_to_coding(touchscreen_chars_df)
 
@@ -142,28 +154,27 @@ def onehot_encode_multiple_nominal(df, touchscreen_chars_df, touchscreen_cbkeys_
         sub_df['eid'] = df['eid']
 
         # Wide to long format
-        long_df = sub_df.melt(id_vars='eid', value_name='code')
-        long_df = long_df.dropna()
+        long_df = sub_df.melt(id_vars='eid', value_name='code').dropna()
         long_df['code'] = long_df['code'].astype(int)
         long_df = long_df[long_df['code'].isin(valid_codes)]
 
-        # One-hot encoding via pivot
+        # One-hot encoding
         onehot = (
             long_df
             .assign(dummy=1)
             .pivot_table(index='eid', columns='code', values='dummy', fill_value=0)
             .astype("Int8")
         )
-
         onehot.columns = [f'f_{fieldid}_{coding}_{code}' for code in onehot.columns]
         return onehot
 
-    # Parallel processing of each FieldID group
+    # Parallel one-hot encoding
     results = Parallel(n_jobs=-1)(
         delayed(process_field_multiple)(fieldid, cols)
         for fieldid, cols in fieldid_to_columns.items()
     )
 
+    # Combine results
     valid_results = [df for df in results if df is not None]
 
     if valid_results:
@@ -175,3 +186,4 @@ def onehot_encode_multiple_nominal(df, touchscreen_chars_df, touchscreen_cbkeys_
         encoded_df = df[['eid']].copy()
 
     return encoded_df
+

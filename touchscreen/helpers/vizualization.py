@@ -6,8 +6,15 @@ from scipy import stats
 import pandas as pd
 
 def correlation_matrix_spearman(df):
-    ordinal_df = df.drop(columns=['Disease'])
-    corr_matrix = ordinal_df.corr(method='spearman')
+    # Drop non-numeric columns like 'Disease' and 'sex' if present
+    columns_to_drop = [col for col in ['Disease', 'sex'] if col in df.columns]
+    numeric_df = df.drop(columns=columns_to_drop)
+
+    # Keep only numeric columns
+    numeric_df = numeric_df.select_dtypes(include=['number'])
+
+    # Compute Spearman correlation
+    corr_matrix = numeric_df.corr(method='spearman')
     return corr_matrix
 
 def visualizate_correlation_matrix_spearman(corr_matrix):
@@ -59,12 +66,42 @@ def correlation_matrix_crammer(df):
                 cramers_matrix.loc[col1, col2] = 1.0
 
     return cramers_matrix
-    
+
 def visualizate_correlation_matrix_crammer(cramers_matrix):
     # ---------- 4. Visualizar matriz de asociación ----------
     plt.figure(figsize=(12, 10))
     sns.heatmap(cramers_matrix, cmap='YlOrRd', center=0.5)
     plt.title("Matriz de Cramér's V (variables nominales)")
+    plt.tight_layout()
+    plt.show()
+    
+def visualize_correlation_matrix(matrix, title="Correlation Matrix", center=None):
+    """
+    Generic heatmap visualization for any correlation or association matrix.
+
+    Parameters:
+    - matrix: pandas DataFrame representing the matrix (square).
+    - title: title of the plot.
+    - center: optional value to center the colormap (e.g., 0 for Pearson).
+    """
+    plt.figure(figsize=(12, 10))
+    sns.heatmap(matrix, cmap='coolwarm', center=center, annot=False)
+    plt.title(title)
+    plt.tight_layout()
+    plt.show()
+
+def visualize_correlation_matrix(matrix, title="Correlation Matrix", center=None):
+    """
+    Generic heatmap visualization for any correlation or association matrix.
+
+    Parameters:
+    - matrix: pandas DataFrame representing the matrix (square).
+    - title: title of the plot.
+    - center: optional value to center the colormap (e.g., 0 for Pearson).
+    """
+    plt.figure(figsize=(12, 10))
+    sns.heatmap(matrix, cmap='coolwarm', center=center, annot=False)
+    plt.title(title)
     plt.tight_layout()
     plt.show()
     
