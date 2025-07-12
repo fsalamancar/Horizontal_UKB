@@ -159,7 +159,7 @@ def rename_onehot_columns(df, touchscreen_chars_df, touchscreen_cbkeys_df, exclu
         if col in exclude_cols:
             continue
 
-        match = re.match(r'f_(\d+)_(\d+)_(\d+)', col)
+        match = re.match(r'f_(\d+)_(\d+)_(-?\d+)', col)
         if not match:
             continue
 
